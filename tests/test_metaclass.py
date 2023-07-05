@@ -1,6 +1,5 @@
 import pytest
-from strict import StrictTypeChecking, StrictTypeError
-import inspect
+from src.strict import *
 
 class StrictClass(metaclass=StrictTypeChecking):
     @staticmethod

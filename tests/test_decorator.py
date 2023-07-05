@@ -1,5 +1,5 @@
 import pytest
-from strict import strict, StrictTypeError
+from src.strict import *
 
 @strict()
 def multiply_first(a: int, b: int) -> int:

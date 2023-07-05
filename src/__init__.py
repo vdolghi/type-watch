@@ -1,1 +1,1 @@
-from strict import strict, StrictTypeChecking, apply_strict
+import strict

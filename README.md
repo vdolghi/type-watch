@@ -1,6 +1,6 @@
 # type-watch
 
-"type-watch" is a Python package that provides tools for enforcing strict type checking on functions and class methods. Strict type checking can be applied to individual functions/methods or used in the form of a metaclass that applies the checks to all the methods of a class.
+"type-watch" is a Python package that provides tools for enforcing strict type checking on functions and class methods at runtime. Strict type checking can be applied to individual functions/methods or used in the form of a metaclass that applies the checks to all the methods of a class.
 
 ## Installation
 
@@ -16,7 +16,9 @@ No requirements other than the standard library.
 
 ## Description
 
-The module consists of several components:
+Question: Do we really need another strict type enforcing library when a cursory glance on PyPI reveals dozens of packages that purport to do the same? Answer: Most of those are rudimentary, lacking in configuration options thus not flexible enough. Many seem to have been abandoned long ago, and thus are not safe for production use. Hence the legitimacy of the current project.
+
+The package consists of several components:
 
 1. **`StrictDecoratorParams`**: A `TypedDict` representing the parameters that can be used with the strict decorator. These parameters include:
    - `prevent_inheritance`: When `True`, only the base class is allowed as an argument, and child classes will raise an error.

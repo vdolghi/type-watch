@@ -1,7 +1,7 @@
 import pytest
 from src.strict import *
 from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Tuple, Set, FrozenSet, Deque, Counter, ChainMap, OrderedDict, Deque, Counter, ChainMap
+from typing import Optional, List, Dict, Tuple, Set, FrozenSet, Deque, Counter, ChainMap, OrderedDict, Deque, Counter, ChainMap, Self, Type
 
 @dataclass
 class StrictClassData:
@@ -17,13 +17,15 @@ class StrictClassData:
     i: Counter[int] = field(default_factory=lambda: Counter({1: 1, 2: 2, 3: 3}))
     j: ChainMap[int, int] = field(default_factory=lambda: ChainMap({1: 1, 2: 2, 3: 3}))
     k: OrderedDict[int, int] = field(default_factory=lambda: OrderedDict({1: 1, 2: 2, 3: 3}))
+    _property_a: int = 0
+    _property_b: int = 0
 
     @strict()
-    def self_multiply_first(self, a: int, b: int) -> int:
+    def self_multiply_first(self: Self, a: int, b: int) -> int:
         return a * b
     @classmethod
     @strict()
-    def class_multiply_first(cls, a: int, b: int) -> int:
+    def class_multiply_first(cls: Type['StrictClassData'], a: int, b: int) -> int:
         return a * b
     @staticmethod
     @strict()
@@ -31,12 +33,12 @@ class StrictClassData:
         return a * b
 
     @strict(skip_arguments=["b"])
-    def self_multiply_second(self, a: int, b: int) -> float:
+    def self_multiply_second(self: Self, a: int, b: int) -> float:
         return a * b
     
     @classmethod
     @strict(skip_arguments=["b"])
-    def class_multiply_second(cls, a: int, b: int) -> float:
+    def class_multiply_second(cls: Type['StrictClassData'], a: int, b: int) -> float:
         return a * b
     
     @staticmethod
@@ -45,12 +47,12 @@ class StrictClassData:
         return a * b
 
     @strict(skip_return=True)
-    def self_multiply_third(self, a: int, b: int) -> int:
+    def self_multiply_third(self: Self, a: int, b: int) -> int:
         return a * b
     
     @classmethod
     @strict(skip_return=True)
-    def class_multiply_third(cls, a: int, b: int) -> int:
+    def class_multiply_third(cls: Type['StrictClassData'], a: int, b: int) -> int:
         return a * b
     
     @staticmethod
@@ -58,17 +60,39 @@ class StrictClassData:
     def static_multiply_third(a: int, b: int) -> int:
         return a * b
     @strict()
-    def self_multiply_fourth(self, a: int, b: int) -> int:
+    def self_multiply_fourth(self: Self, a: int, b: int) -> int:
         return f'{a * b}';
     @classmethod
     @strict()
-    def class_multiply_fourth(cls, a: int, b: int) -> int:
+    def class_multiply_fourth(cls: Type['StrictClassData'], a: int, b: int) -> int:
         return f'{a * b}';
 
     @staticmethod
     @strict()
     def static_multiply_fourth(a: int, b: int) -> int:
         return f'{a * b}';
+
+    @property
+    @strict()
+    def property_a(self: Self) -> int:
+        return self._property_a
+    
+    @property_a.setter
+    @strict()
+    def property_a(self: Self, value: int):
+        self._property_a = value
+        return None
+
+    @property
+    @strict()
+    def property_b(self: Self) -> Optional[str]:
+            return self._property_b
+        
+    @property_b.setter
+    @strict()
+    def property_b(self: Self, value: str):
+        self._property_b = value
+        return None
 
 class TestStrictDataclassMethods:
 
@@ -129,3 +153,21 @@ class TestStrictDataclassMethods:
     def test_static_return_fail(self):
         with pytest.raises(StrictTypeError):
             assert StrictClassData.static_multiply_fourth(4, 2) == '8'
+
+    def test_self_property_good(self):
+        assert StrictClassData().property_a == 0
+
+    def test_self_property_bad(self):
+        with pytest.raises(StrictTypeError):
+            assert StrictClassData().property_b == 'hello'
+
+    def test_self_property_good_setter(self):
+        sc: StrictClassData = StrictClassData()
+        sc.property_a = 1
+        assert sc.property_a == 1
+
+    def test_self_property_bad_setter(self):
+        sc: StrictClassData = StrictClassData()
+        with pytest.raises(StrictTypeError):
+            sc.property_b = 'hello'
+            assert sc.property_b == 'hello'

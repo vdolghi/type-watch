@@ -1,4 +1,2 @@
-* Write more tests to ensure strict typing works properly with properties inside classes
-* Add support for overriden method in classes and write tests
 * Add support for type checking variables inside and outside functions (maybe with ast?)
 * Add support for type checking lambdas generically and also inside classes and functions (maybe with ast?)

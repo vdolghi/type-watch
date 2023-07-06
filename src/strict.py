@@ -1,8 +1,9 @@
-from typing import Callable, Unpack, TypedDict, Type, List, Optional, Tuple, Dict, Any
+from typing import Callable, Unpack, TypedDict, Type, List, Optional, Tuple, Dict, Any, overload
 import inspect
 import sys
 import pkgutil
 from functools import wraps
+
 
 class StrictDecoratorParams(TypedDict, total = False):
     """TypedDict for the parameters of the strict decorator"""

@@ -77,3 +77,56 @@ apply_strict("my_package")
 ```
 
 Please note that the `apply_strict` function should be called after all functions/methods have been defined in the target module or package. It will replace the original functions/methods with their decorated versions.
+
+## Known issues
+
+1) Property setters using the None return type annotation will trigger a StrictTypeError:
+   
+```python
+ @some_random_property.setter
+ @strict()
+  def property_b(self: Self, value: str) -> None:
+     self._some_random_property = value
+ ```
+ To fix the issue, remove the None type annotation.
+
+2) Overloading signatures with @overload together with the @strict decorator was not tested. For now, you should avoid it. Instead of this
+
+```python
+@overload
+@strict
+# won't work
+def process_data(data: str) -> str:
+    pass
+
+@overload
+@strict()
+# won't work
+def process_data(data: int) -> int:
+    pass
+
+def process_data(data):
+    if isinstance(data, str):
+        # Implementation for str type
+        return "Processed: " + data
+    elif isinstance(data, int):
+        # Implementation for int type
+        return data * 2
+    else:
+        raise TypeError("Invalid data type")
+```
+
+you could try the much simpler
+
+```python
+@strict()
+def process_data(data: str | int): # or: Union[str, int] for Python < 3.10
+    # provide the allowed signatures for this function in the documentation
+    if isinstance(data, str):
+        # Implementation for str type
+        return "Processed: " + data
+    if isinstance(data, int):
+        # Implementation for int type
+        return data * 2
+    # if data is not a string and not an integer, StrictTypeError will be raised
+```
